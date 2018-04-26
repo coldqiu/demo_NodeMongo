@@ -1,0 +1,11 @@
+{
+  "name": "learnNodeJs_Mongo",
+  "version": "0.0.1",
+  "dependencies": {
+    "ejs": "^2.5.9",
+    "express": "^4.10.3",
+    "formidable": "^1.2.1",
+    "mongodb": "^2.2.35",
+    "silly-datetime": "^0.1.2"
+  }
+}

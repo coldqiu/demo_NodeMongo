@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.css">
+    <style>
+        #form-success, #form-fail {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+
+
+<form class="thisForm col-md-6"  >
+    <h1>JFIEFAJGKI</h1>
+    <div class="form-group">
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1">称呼</span>
+            <input name="chenghu" id="chenghu" type="text" class="form-control" aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1">留言</span>
+            <textarea name="liuyan" id="liuyan" class="form-control" rows="3"></textarea>
+        </div>
+    </div>
+    <button type="button" id="submit" class="btn btn-default">Submit</button>
+
+    <div id="form-success" class="alert alert-warning alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Success!</strong>  表单提交成功
+    </div>
+    <div id="form-fail" class="alert alert-warning alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Warning!</strong> Better check yourself, you're not looking too good.
+    </div>
+</form>
+
+<div id="liuyan-list">
+  <div class="container">
+      <div class="row">
+
+      </div>
+  </div>
+</div>
+
+<script src="js/jquery.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/underscore-change.js-min.js"></script>
+
+<script type="text/template" id="moban">
+    <div class="list-group">
+        <h4 class="list-group-item-heading">称呼：{{= chenghu }}</h4>
+        <p class="list-group-item-text">留言：{{= liuyan }}</p>
+        <p>时间：{{= shijian }}</p>
+    </div>
+</script>
+
+<script>
+
+    //Ajax 请求数据
+    $.get("/du",function(result){
+        // result 是一个键值为“result” 的，值为 result数组的json对象；
+        //var json = JSON.parse(result); 所以不需要 这一步了
+
+        var compiled = _.template($("#moban").html()); //得到模板,转为模板函数
+
+        for(var i=0; i<result.result.length; i++) {
+            // 数据绑定
+            var html = compiled({liuyan: result.result[i].liuyan, chenghu: result.result[i].chenghu, shijian: result.result[i].shijian});
+            $("#liuyan-list").append($(html)); //添加节点
+        }
+    })
+
+    // 提交表单
+    $("#submit").click(function(){
+        $.post("/tijiao",{
+            "chenghu": $("#chenghu").val(),
+            "liuyan": $("#liuyan").val(),
+            //"shijian": new Date() //后台时间为准,前端使用暂时的“假时间"
+        },function(result){
+            if (result.result == -1) {
+                $("#form-fail").fadeIn();
+            } else if (result.result == 1) {
+                $("#form-success").fadeIn();
+                //  下面三条试假数据， 直接从页面中获取的，
+                var compiled = _.template($("#moban").html());
+                var html = compiled({liuyan:$("#liuyan").val(),chenghu:$("#chenghu").val(), shijian: new Date()});
+                $(html).insertBefore($("#liuyan-list"));
+            }
+        });
+    })
+</script>
+
+
+</body>
+</html>
